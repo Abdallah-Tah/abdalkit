@@ -61,56 +61,26 @@ class InstallCommand extends Command
     
         $external_database = $this->option('external_database');
     
-        if ($external_database) {
-            $database_count = $this->ask('How many database settings do you want to create?');
-    
+        if (!$external_database) {
+            // Prompt the user for the database settings
+            $this->info('Database configuration:');
+            $driver = $this->choice('Please select the driver for the database:', ['mysql', 'pgsql', 'sqlsrv', 'sqlite'], 0);
+            $host = $this->ask('Please enter the host for the database:');
+            $database = $this->ask('Please enter the database name for the database:');
+            $username = $this->ask('Please enter the username for the database:');
+            $password = $this->secret('Please enter the password for the database:');
+        
+            // Update the .env file
             $envFilePath = base_path('.env');
             $envContent = file_get_contents($envFilePath);
-    
-            $newConnections = [];
-    
-            for ($i = 0; $i < $database_count; $i++) {
-    
-                $dbName = "DB_EXT_{$i}";
-                $driver = $this->choice("Please select the driver for database " . ($i + 1) . ":", ['mysql', 'pgsql', 'sqlsrv', 'sqlite'], 0);
-                $host = $this->ask("Please enter the host for database " . ($i + 1) . ":");
-                $database = $this->ask("Please enter the database name for database " . ($i + 1) . ":");
-                $username = $this->ask("Please enter the username for database " . ($i + 1) . ":");
-                $password = $this->secret("Please enter the password for database " . ($i + 1) . ":");
-    
-                // Update the .env file
-                $envContent .= "\n{$dbName}_DRIVER={$driver}\n{$dbName}_HOST={$host}\n{$dbName}_DATABASE={$database}\n{$dbName}_USERNAME={$username}\n{$dbName}_PASSWORD={$password}\n";
-                file_put_contents($envFilePath, $envContent);
-    
-                // Prepare new connections to be added to the config/database.php file
-                $newConnections[$dbName] = [
-                    'driver' => env("{$dbName}_DRIVER"),
-                    'host' => env("{$dbName}_HOST"),
-                    'port' => env('DB_PORT', '3306'),
-                    'database' => env("{$dbName}_DATABASE"),
-                    'username' => env("{$dbName}_USERNAME"),
-                    'password' => env("{$dbName}_PASSWORD"),
-                    'unix_socket' => env('DB_SOCKET', ''),
-                    'charset' => 'utf8mb4',
-                    'collation' => 'utf8mb4_unicode_ci',
-                    'prefix' => '',
-                    'strict' => true,
-                    'engine' => null,
-                ];
-            }
-    
-            // Update the config/database.php file
-            $databaseConfigPath = config_path('database.php');
-            $databaseConfigContent = file_get_contents($databaseConfigPath);
-            $newConnectionsPlaceholder = '// Place New Connections Here';
-    
-            $newConnectionsString = var_export($newConnections, true);
-            $newConnectionsString = preg_replace('/\'env\((.*?)\)\'/', 'env($1)', $newConnectionsString);
-            $newConnectionsString = preg_replace('/  /', '    ', $newConnectionsString);
-    
-            $databaseConfigContent = str_replace($newConnectionsPlaceholder, $newConnectionsString, $databaseConfigContent);
-            file_put_contents($databaseConfigPath, $databaseConfigContent);
+            $envContent = preg_replace('/^DB_CONNECTION=.*/m', "DB_CONNECTION={$driver}", $envContent);
+            $envContent = preg_replace('/^DB_HOST=.*/m', "DB_HOST={$host}", $envContent);
+            $envContent = preg_replace('/^DB_DATABASE=.*/m', "DB_DATABASE={$database}", $envContent);
+            $envContent = preg_replace('/^DB_USERNAME=.*/m', "DB_USERNAME={$username}", $envContent);
+            $envContent = preg_replace('/^DB_PASSWORD=.*/m', "DB_PASSWORD={$password}", $envContent);
+            file_put_contents($envFilePath, $envContent);
         }
+        
 
         if ($kit === "Laravel Breeze (Tailwind)") {
             $theme = $this->choice(
