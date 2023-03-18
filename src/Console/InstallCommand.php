@@ -164,12 +164,12 @@ class InstallCommand extends Command
         copy(__DIR__ . '/../../resources/stubs/breeze/tailwindcomponents/views/profile/edit.blade.php', resource_path('views/profile/edit.blade.php'));
 
         // Assets
-        copy(__DIR__ . '/../../resources/stubs/breeze/windmill/tailwind.config.js', base_path('tailwind.config.js'));
-        copy(__DIR__ . '/../../resources/stubs/breeze/windmill/css/app.css', resource_path('css/app.css'));
-        copy(__DIR__ . '/../../resources/stubs/breeze/windmill/js/init-alpine.js', public_path('js/init-alpine.js'));
+        copy(__DIR__ . '/../../resources/stubs/breeze/tailwindcomponents/tailwind.config.js', base_path('tailwind.config.js'));
+        copy(__DIR__ . '/../../resources/stubs/breeze/tailwindcomponents/css/app.css', resource_path('css/app.css'));
+        copy(__DIR__ . '/../../resources/stubs/breeze/tailwindcomponents/js/init-alpine.js', public_path('js/init-alpine.js'));
 
         // Images
-        (new Filesystem)->copyDirectory(__DIR__ . '/../../resources/stubs/breeze/windmill/images', public_path('images'));
+        (new Filesystem)->copyDirectory(__DIR__ . '/../../resources/stubs/breeze/tailwindcomponents/images', public_path('images'));
 
 
         // Demo table
