@@ -43,13 +43,21 @@ AbdalKit requires PHP 8+ and Laravel 9+.
     php artisan abdalkit:install
     ```
 
-4. Compile the project assets, run:
+4. Set up your database connection in the `.env` file.
+
+5. Run the migrations to set up the required tables in the database:
+
+    ```shell
+    php artisan migrate
+    ```
+
+6. Compile the project assets, run:
 
     ```shell
     npm install && npm run dev
     ```
 
-5. That's it! You have Laravel Auth starter, just visit the home page and click Log in / Register.
+7. That's it! You have Laravel Auth starter, just visit the home page and click Log in / Register.
 
 <br/>
 
