@@ -15,8 +15,9 @@ class InstallCommand extends Command
      * @var string
      */
     protected $signature = 'abdalkit:install
-                            {--composer=global : Absolute path to the Composer binary which should be used to install packages}
-                            {--php_version=php : Php version command, like `sail` or `./vendor/bin/sail` or `docker-compose up...`}';
+                        {--composer=global : Absolute path to the Composer binary which should be used to install packages}
+                        {--php_version=php : Php version command, like `sail` or `./vendor/bin/sail` or `docker-compose up...`}
+                        {--external_database : Whether to create external database connections}';
 
     /**
      * The console command description.
