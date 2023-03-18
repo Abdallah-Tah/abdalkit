@@ -16,7 +16,7 @@ The package supports:
 
 ## Features
 
-Along with the Design Themes, Larastarters adds a few features that are typical for almost any project:
+Along with the Design Themes, AbdalKit adds a few features that are typical for almost any project:
 
 - Profile management form to change name/email/password
 - A sample table of Users list
@@ -34,7 +34,7 @@ AbdalKit requires PHP 8+ and Laravel 9+.
 2. Require Larastarters as a dev dependency, run:
 
     ```shell
-    composer require abdallahmohamed/abdalkit --dev
+    composer require Abdallah-Tah/abdalkit --dev
     ```
 
 3. Configure Larastarters, run the command below:
