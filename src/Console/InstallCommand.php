@@ -17,7 +17,8 @@ class InstallCommand extends Command
     protected $signature = 'abdalkit:install
                         {--composer=global : Absolute path to the Composer binary which should be used to install packages}
                         {--php_version=php : Php version command, like `sail` or `./vendor/bin/sail` or `docker-compose up...`}
-                        {--external_database : Whether to create external database connections}';
+                        {--external_database : Whether to create additional external database connections}';
+
 
     /**
      * The console command description.
@@ -73,8 +74,13 @@ class InstallCommand extends Command
                 $dbName = "DB_EXT_{$i}";
                 $driver = $this->choice("Please select the driver for database " . ($i + 1) . ":", ['mysql', 'pgsql', 'sqlsrv', 'sqlite'], 0);
                 $host = $this->ask("Please enter the host for database " . ($i + 1) . ":");
+                $database = $this->ask("Please enter the database name for database " . ($i + 1) . ":");
                 $username = $this->ask("Please enter the username for database " . ($i + 1) . ":");
                 $password = $this->secret("Please enter the password for database " . ($i + 1) . ":");
+
+                // Update the .env file
+                $envContent .= "\n{$dbName}_DRIVER={$driver}\n{$dbName}_HOST={$host}\n{$dbName}_DATABASE={$database}\n{$dbName}_USERNAME={$username}\n{$dbName}_PASSWORD={$password}\n";
+
 
 
                 // Update the .env file
