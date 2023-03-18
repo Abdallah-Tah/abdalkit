@@ -1,0 +1,24 @@
+{
+    "name": "abdallahmohamed/abdalkit",
+    "description": "Abdalkit is a sophisticated Laravel package designed specifically for KAVX, streamlining the development process by providing a unified and easily implementable theme for the company's web applications.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Abdallah Mohamed",
+            "email": "abdal_cascad@hotmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Abdalkit\\Abdalkit\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Abdalkit\\Abdalkit\\AbdalkitServiceProvider"
+            ]
+        }
+    },
+    "version": "2.3.1"
+}
