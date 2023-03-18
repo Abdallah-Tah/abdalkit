@@ -58,35 +58,30 @@ class InstallCommand extends Command
             ['Laravel Breeze (Tailwind)'],
             0
         );
-
+    
         $external_database = $this->option('external_database');
-
+    
         if ($external_database) {
             $database_count = $this->ask('How many database settings do you want to create?');
-
+    
             $envFilePath = base_path('.env');
             $envContent = file_get_contents($envFilePath);
-
+    
             $newConnections = [];
-
+    
             for ($i = 0; $i < $database_count; $i++) {
-
+    
                 $dbName = "DB_EXT_{$i}";
                 $driver = $this->choice("Please select the driver for database " . ($i + 1) . ":", ['mysql', 'pgsql', 'sqlsrv', 'sqlite'], 0);
                 $host = $this->ask("Please enter the host for database " . ($i + 1) . ":");
                 $database = $this->ask("Please enter the database name for database " . ($i + 1) . ":");
                 $username = $this->ask("Please enter the username for database " . ($i + 1) . ":");
                 $password = $this->secret("Please enter the password for database " . ($i + 1) . ":");
-
+    
                 // Update the .env file
                 $envContent .= "\n{$dbName}_DRIVER={$driver}\n{$dbName}_HOST={$host}\n{$dbName}_DATABASE={$database}\n{$dbName}_USERNAME={$username}\n{$dbName}_PASSWORD={$password}\n";
-
-
-
-                // Update the .env file
-                $envContent .= "\n{$dbName}_DRIVER={$driver}\n{$dbName}_HOST={$host}\n{$dbName}_USERNAME={$username}\n{$dbName}_PASSWORD={$password}\n";
                 file_put_contents($envFilePath, $envContent);
-
+    
                 // Prepare new connections to be added to the config/database.php file
                 $newConnections[$dbName] = [
                     'driver' => env("{$dbName}_DRIVER"),
@@ -103,16 +98,16 @@ class InstallCommand extends Command
                     'engine' => null,
                 ];
             }
-
+    
             // Update the config/database.php file
             $databaseConfigPath = config_path('database.php');
             $databaseConfigContent = file_get_contents($databaseConfigPath);
             $newConnectionsPlaceholder = '// Place New Connections Here';
-
+    
             $newConnectionsString = var_export($newConnections, true);
             $newConnectionsString = preg_replace('/\'env\((.*?)\)\'/', 'env($1)', $newConnectionsString);
             $newConnectionsString = preg_replace('/  /', '    ', $newConnectionsString);
-
+    
             $databaseConfigContent = str_replace($newConnectionsPlaceholder, $newConnectionsString, $databaseConfigContent);
             file_put_contents($databaseConfigPath, $databaseConfigContent);
         }
@@ -137,6 +132,10 @@ class InstallCommand extends Command
 
             if ($theme === 'tailwindcomponents') {
                 return $this->replaceWithTailwindComponents();
+            }
+
+            if ($database_count > 0) {
+                $this->info('Please update the config/database.php file to add the new connections.');
             }
         }
     }
