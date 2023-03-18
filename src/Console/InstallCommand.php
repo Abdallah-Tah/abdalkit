@@ -50,12 +50,65 @@ class InstallCommand extends Command
     public function handle()
     {
         $this->php_version = $this->option('php_version');
-        
+
         $kit = $this->choice(
             'Which starter kit you want to use?',
             ['Laravel Breeze (Tailwind)'],
             0
         );
+
+        $external_database = $this->option('external_database');
+
+        if ($external_database) {
+            $database_count = $this->ask('How many database settings do you want to create?');
+
+            $envFilePath = base_path('.env');
+            $envContent = file_get_contents($envFilePath);
+
+            $newConnections = [];
+
+            for ($i = 0; $i < $database_count; $i++) {
+
+                $dbName = "DB_EXT_{$i}";
+                $driver = $this->choice("Please select the driver for database " . ($i + 1) . ":", ['mysql', 'pgsql', 'sqlsrv', 'sqlite'], 0);
+                $host = $this->ask("Please enter the host for database " . ($i + 1) . ":");
+                $username = $this->ask("Please enter the username for database " . ($i + 1) . ":");
+                $password = $this->secret("Please enter the password for database " . ($i + 1) . ":");
+
+
+                // Update the .env file
+                $envContent .= "\n{$dbName}_DRIVER={$driver}\n{$dbName}_HOST={$host}\n{$dbName}_USERNAME={$username}\n{$dbName}_PASSWORD={$password}\n";
+                file_put_contents($envFilePath, $envContent);
+
+                // Prepare new connections to be added to the config/database.php file
+                $newConnections[$dbName] = [
+                    'driver' => env("{$dbName}_DRIVER"),
+                    'host' => env("{$dbName}_HOST"),
+                    'port' => env('DB_PORT', '3306'),
+                    'database' => env("{$dbName}_DATABASE"),
+                    'username' => env("{$dbName}_USERNAME"),
+                    'password' => env("{$dbName}_PASSWORD"),
+                    'unix_socket' => env('DB_SOCKET', ''),
+                    'charset' => 'utf8mb4',
+                    'collation' => 'utf8mb4_unicode_ci',
+                    'prefix' => '',
+                    'strict' => true,
+                    'engine' => null,
+                ];
+            }
+
+            // Update the config/database.php file
+            $databaseConfigPath = config_path('database.php');
+            $databaseConfigContent = file_get_contents($databaseConfigPath);
+            $newConnectionsPlaceholder = '// Place New Connections Here';
+
+            $newConnectionsString = var_export($newConnections, true);
+            $newConnectionsString = preg_replace('/\'env\((.*?)\)\'/', 'env($1)', $newConnectionsString);
+            $newConnectionsString = preg_replace('/  /', '    ', $newConnectionsString);
+
+            $databaseConfigContent = str_replace($newConnectionsPlaceholder, $newConnectionsString, $databaseConfigContent);
+            file_put_contents($databaseConfigPath, $databaseConfigContent);
+        }
 
         if ($kit === "Laravel Breeze (Tailwind)") {
             $theme = $this->choice(
@@ -79,15 +132,25 @@ class InstallCommand extends Command
                 return $this->replaceWithTailwindComponents();
             }
         }
-    
     }
 
     protected function replaceWithTailwindComponents()
     {
+
+        // NPM Packages...
+        $this->updateNodePackages(function ($packages) {
+            return [
+                'color' => '^4.0.1'
+            ] + $packages;
+        });
+
         // Views...
         (new Filesystem)->ensureDirectoryExists(resource_path('views/auth'));
         (new Filesystem)->ensureDirectoryExists(resource_path('views/layouts'));
         (new Filesystem)->ensureDirectoryExists(resource_path('views/components'));
+        (new Filesystem)->ensureDirectoryExists(public_path('images'));
+        (new Filesystem)->ensureDirectoryExists(public_path('js'));
+
 
         (new Filesystem)->copyDirectory(__DIR__ . '/../../resources/stubs/breeze/tailwindcomponents/views/auth', resource_path('views/auth'));
         (new Filesystem)->copyDirectory(__DIR__ . '/../../resources/stubs/breeze/tailwindcomponents/views/layouts', resource_path('views/layouts'));
@@ -98,6 +161,15 @@ class InstallCommand extends Command
         copy(__DIR__ . '/../../resources/stubs/breeze/tailwindcomponents/views/dashboard.blade.php', resource_path('views/dashboard.blade.php'));
         copy(__DIR__ . '/../../resources/stubs/breeze/tailwindcomponents/views/about.blade.php', resource_path('views/about.blade.php'));
         copy(__DIR__ . '/../../resources/stubs/breeze/tailwindcomponents/views/profile/edit.blade.php', resource_path('views/profile/edit.blade.php'));
+
+        // Assets
+        copy(__DIR__ . '/../../resources/stubs/breeze/windmill/tailwind.config.js', base_path('tailwind.config.js'));
+        copy(__DIR__ . '/../../resources/stubs/breeze/windmill/css/app.css', resource_path('css/app.css'));
+        copy(__DIR__ . '/../../resources/stubs/breeze/windmill/js/init-alpine.js', public_path('js/init-alpine.js'));
+
+        // Images
+        (new Filesystem)->copyDirectory(__DIR__ . '/../../resources/stubs/breeze/windmill/images', public_path('images'));
+
 
         // Demo table
         (new Filesystem)->ensureDirectoryExists(resource_path('views/users'));
@@ -181,12 +253,12 @@ class InstallCommand extends Command
             try {
                 $process->setTty(true);
             } catch (RuntimeException $e) {
-                $this->output->writeln('  <bg=yellow;fg=black> WARN </> '.$e->getMessage().PHP_EOL);
+                $this->output->writeln('  <bg=yellow;fg=black> WARN </> ' . $e->getMessage() . PHP_EOL);
             }
         }
 
         $process->run(function ($type, $line) {
-            $this->output->write('    '.$line);
+            $this->output->write('    ' . $line);
         });
     }
 }
