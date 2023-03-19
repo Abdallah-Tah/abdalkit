@@ -227,31 +227,47 @@ class InstallCommand extends Command
 
                 $driver = $this->choice('Please select the driver for the database:', ['mysql', 'pgsql', 'sqlsrv', 'sqlite'], 0);
                 $host = $this->ask('Please enter the host for the database:');
+                $port = $this->ask('Please enter the port for the database:');
                 $database = $this->ask('Please enter the database name for the database:');
                 $username = $this->ask('Please enter the username for the database:');
                 $password = $this->ask('Please enter the password for the database:'); // The password will not be hidden or masked during input
 
-                $this->updateDatabaseConfig($i, $driver, $host, $database, $username, $password);
-                $this->updateEnvFile($i, $driver, $host, $database, $username, $password);
+                $this->updateDatabaseConfig($i, $driver, $host, $port, $database, $username, $password);
+                $this->updateEnvFile($i, $driver, $host, $port, $database, $username, $password);
             }
         }
     }
 
-    protected function updateDatabaseConfig($index, $driver, $host, $database, $username, $password)
+
+    protected function updateDatabaseConfig($index, $driver, $host, $port, $database, $username, $password)
     {
-        $config = Config::get('database.connections');
+        $configPath = config_path('database.php');
+        $configContent = file_get_contents($configPath);
 
-        $config["db{$index}"] = [
-            'driver' => $driver,
-            'host' => $host,
-            'database' => $database,
-            'username' => $username,
-            'password' => $password,
-            // ... Other required settings for the database driver
-        ];
+        $newConnection = <<<EOD
+        'db{$index}' => [
+            'driver' => env('DB_CONNECTION_{$index}', '{$driver}'),
+            'host' => env('DB_HOST_{$index}', '{$host}'),
+            'port' => env('DB_PORT_{$index}', '{$port}'),
+            'database' => env('DB_DATABASE_{$index}', '{$database}'),
+            'username' => env('DB_USERNAME_{$index}', '{$username}'),
+            'password' => env('DB_PASSWORD_{$index}', '{$password}'),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+        ],
 
-        Config::set('database.connections', $config);
+EOD;
+
+        $configContent = preg_replace(
+            "/'connections' => \[\n(\s+)/",
+            "'connections' => [\n$1" . $newConnection,
+            $configContent
+        );
+
+        file_put_contents($configPath, $configContent);
     }
+
 
     protected function updateEnvFile($index, $driver, $host, $database, $username, $password)
     {
