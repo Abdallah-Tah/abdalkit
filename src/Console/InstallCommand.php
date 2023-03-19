@@ -78,8 +78,18 @@ class InstallCommand extends Command
 
             copy(__DIR__ . '/../../resources/stubs/controllers/UserController.php', app_path('Http/Controllers/UserController.php'));
 
-            (new Filesystem)->ensureDirectoryExists(app_path('Http/Requests'));
-            (new Filesystem)->copyDirectory(__DIR__ . '/../../resources/stubs/requests', app_path('Http/Requests/'));
+            // (new Filesystem)->ensureDirectoryExists(app_path('Http/Requests'));
+            // (new Filesystem)->copyDirectory(__DIR__ . '/../../resources/stubs/requests', app_path('Http/Requests/'));
+
+            // Ensure the directories exist
+            (new Filesystem)->ensureDirectoryExists(app_path('Http/Requests/Auth'));
+            (new Filesystem)->ensureDirectoryExists(app_path('Http/Requests/Profile'));
+
+            // Copy the LoginRequest.php file to the Auth directory
+            copy(__DIR__ . '/../../resources/stubs/requests/Auth/LoginRequest.php', app_path('Http/Requests/Auth/LoginRequest.php'));
+
+            // Copy the ProfileUpdateRequest.php file to the Profile directory
+            copy(__DIR__ . '/../../resources/stubs/requests/ProfileUpdateRequest.php', app_path('Http/Requests/ProfileUpdateRequest.php'));
 
             if ($theme === 'tailwindcomponents') {
                 return $this->replaceWithTailwindComponents();
