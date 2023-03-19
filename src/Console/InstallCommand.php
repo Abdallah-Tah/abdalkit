@@ -58,29 +58,9 @@ class InstallCommand extends Command
             ['Laravel Breeze (Tailwind)'],
             0
         );
-    
-        $external_database = $this->option('external_database');
-    
-        if (!$external_database) {
-            // Prompt the user for the database settings
-            $this->info('Database configuration:');
-            $driver = $this->choice('Please select the driver for the database:', ['mysql', 'pgsql', 'sqlsrv', 'sqlite'], 0);
-            $host = $this->ask('Please enter the host for the database:');
-            $database = $this->ask('Please enter the database name for the database:');
-            $username = $this->ask('Please enter the username for the database:');
-            $password = $this->secret('Please enter the password for the database:');
-        
-            // Update the .env file
-            $envFilePath = base_path('.env');
-            $envContent = file_get_contents($envFilePath);
-            $envContent = preg_replace('/^DB_CONNECTION=.*/m', "DB_CONNECTION={$driver}", $envContent);
-            $envContent = preg_replace('/^DB_HOST=.*/m', "DB_HOST={$host}", $envContent);
-            $envContent = preg_replace('/^DB_DATABASE=.*/m', "DB_DATABASE={$database}", $envContent);
-            $envContent = preg_replace('/^DB_USERNAME=.*/m', "DB_USERNAME={$username}", $envContent);
-            $envContent = preg_replace('/^DB_PASSWORD=.*/m', "DB_PASSWORD={$password}", $envContent);
-            file_put_contents($envFilePath, $envContent);
-        }
-        
+
+        $this->setupDatabases();
+
 
         if ($kit === "Laravel Breeze (Tailwind)") {
             $theme = $this->choice(
@@ -102,10 +82,6 @@ class InstallCommand extends Command
 
             if ($theme === 'tailwindcomponents') {
                 return $this->replaceWithTailwindComponents();
-            }
-
-            if ($database_count > 0) {
-                $this->info('Please update the config/database.php file to add the new connections.');
             }
         }
     }
@@ -236,5 +212,57 @@ class InstallCommand extends Command
         $process->run(function ($type, $line) {
             $this->output->write('    ' . $line);
         });
+    }
+
+    protected function setupDatabases()
+    {
+        $additionalDatabases = $this->confirm('Would you like to create more databases?');
+
+        if ($additionalDatabases) {
+            $databaseCount = $this->ask('How many databases would you like to create?');
+
+            for ($i = 1; $i <= $databaseCount; $i++) {
+                $this->info("You are now setting up Database {$i}");
+
+                $driver = $this->choice('Please select the driver for the database:', ['mysql', 'pgsql', 'sqlsrv', 'sqlite'], 0);
+                $host = $this->ask('Please enter the host for the database:');
+                $database = $this->ask('Please enter the database name for the database:');
+                $username = $this->ask('Please enter the username for the database:');
+                $password = $this->ask('Please enter the password for the database:'); // The password will not be hidden or masked during input
+
+                $this->updateDatabaseConfig($i, $driver, $host, $database, $username, $password);
+                $this->updateEnvFile($i, $driver, $host, $database, $username, $password);
+            }
+        }
+    }
+
+    protected function updateDatabaseConfig($index, $driver, $host, $database, $username, $password)
+    {
+        $config = Config::get('database.connections');
+
+        $config["db{$index}"] = [
+            'driver' => $driver,
+            'host' => $host,
+            'database' => $database,
+            'username' => $username,
+            'password' => $password,
+            // ... Other required settings for the database driver
+        ];
+
+        Config::set('database.connections', $config);
+    }
+
+    protected function updateEnvFile($index, $driver, $host, $database, $username, $password)
+    {
+        $envFilePath = base_path('.env');
+        $envContent = file_get_contents($envFilePath);
+
+        $envContent .= "\nDB_CONNECTION_{$index}={$driver}";
+        $envContent .= "\nDB_HOST_{$index}={$host}";
+        $envContent .= "\nDB_DATABASE_{$index}={$database}";
+        $envContent .= "\nDB_USERNAME_{$index}={$username}";
+        $envContent .= "\nDB_PASSWORD_{$index}={$password}\n";
+
+        file_put_contents($envFilePath, $envContent);
     }
 }
