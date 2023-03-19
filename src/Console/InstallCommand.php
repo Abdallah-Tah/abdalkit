@@ -5,6 +5,7 @@ namespace Abdalkit\Abdalkit\Console;
 use RuntimeException;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Config;
 use Symfony\Component\Process\Process;
 
 class InstallCommand extends Command
