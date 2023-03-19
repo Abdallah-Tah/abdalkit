@@ -269,13 +269,14 @@ EOD;
     }
 
 
-    protected function updateEnvFile($index, $driver, $host, $database, $username, $password)
+    protected function updateEnvFile($index, $driver, $host, $port, $database, $username, $password)
     {
         $envFilePath = base_path('.env');
         $envContent = file_get_contents($envFilePath);
 
         $envContent .= "\nDB_CONNECTION_{$index}={$driver}";
         $envContent .= "\nDB_HOST_{$index}={$host}";
+        $envContent .= "\nDB_PORT_{$index}={$port}";
         $envContent .= "\nDB_DATABASE_{$index}={$database}";
         $envContent .= "\nDB_USERNAME_{$index}={$username}";
         $envContent .= "\nDB_PASSWORD_{$index}={$password}\n";
