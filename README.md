@@ -1,4 +1,4 @@
-# Larastarters
+# AbdalKit
 
 AbdalKit is a Laravel starter kit with a few features that are typical for almost any project.
 
@@ -34,7 +34,7 @@ AbdalKit requires PHP 8+ and Laravel 9+.
 2. Require Larastarters as a dev dependency, run:
 
     ```shell
-    composer require Abdallah-Tah/abdalkit --dev
+    composer require abdallah-tah/abdalkit:dev-main --dev
     ```
 
 3. Configure Larastarters, run the command below:
