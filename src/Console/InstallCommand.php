@@ -300,7 +300,7 @@ EOD;
     public function updateUserModelConnection()
     {
         $availableConnections = array_keys(config('database.connections'));
-        $selectedConnection = $this->choice('Please select the database connection for the User model:', $availableConnections);
+        $selectedConnection = $this->choice('Please select the database connection for the User model', $availableConnections);
 
         $userModelPath = app_path('Models/User.php');
         $userModelContent = file_get_contents($userModelPath);
@@ -309,7 +309,7 @@ EOD;
             $userModelContent = preg_replace('/protected \$connection = [\'"].*?[\'"];/', "protected \$connection = '{$selectedConnection}';", $userModelContent);
         } else {
             $connectionLine = "    protected \$connection = '{$selectedConnection}';\n";
-            $userModelContent = preg_replace('/(class User extends Authenticatable\n{)/', "$1\n{$connectionLine}", $userModelContent);
+            $userModelContent = preg_replace('/(use HasApiTokens, HasFactory, Notifiable;)/', "$1\n{$connectionLine}", $userModelContent);
         }
 
         file_put_contents($userModelPath, $userModelContent);
