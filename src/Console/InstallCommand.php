@@ -83,7 +83,7 @@ class InstallCommand extends Command
 
             // Ensure the directories exist
             (new Filesystem)->ensureDirectoryExists(app_path('Http/Requests/Auth'));
-            (new Filesystem)->ensureDirectoryExists(app_path('Http/Requests/Profile'));
+            (new Filesystem)->ensureDirectoryExists(app_path('Http/Requests'));
 
             // Copy the LoginRequest.php file to the Auth directory
             copy(__DIR__ . '/../../resources/stubs/requests/Auth/LoginRequest.php', app_path('Http/Requests/Auth/LoginRequest.php'));
