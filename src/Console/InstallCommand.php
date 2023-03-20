@@ -235,12 +235,12 @@ class InstallCommand extends Command
             for ($i = 1; $i <= $databaseCount; $i++) {
                 $this->info("You are now setting up Database {$i}");
 
-                $driver = $this->choice('Please select the driver for the database:', ['mysql', 'pgsql', 'sqlsrv', 'sqlite'], 0);
-                $host = $this->ask('Please enter the host for the database:');
-                $port = $this->ask('Please enter the port for the database:');
-                $database = $this->ask('Please enter the database name for the database:');
-                $username = $this->ask('Please enter the username for the database:');
-                $password = $this->ask('Please enter the password for the database:'); // The password will not be hidden or masked during input
+                $driver = $this->choice('Please select the driver for the database', ['mysql', 'pgsql', 'sqlsrv', 'sqlite'], 0);
+                $host = $this->ask('Please enter the host for the database');
+                $port = $this->ask('Please enter the port for the database');
+                $database = $this->ask('Please enter the database name for the database');
+                $username = $this->ask('Please enter the username for the database');
+                $password = $this->ask('Please enter the password for the database'); 
 
                 $this->updateDatabaseConfig($i, $driver, $host, $port, $database, $username, $password);
                 $this->updateEnvFile($i, $driver, $host, $port, $database, $username, $password);
