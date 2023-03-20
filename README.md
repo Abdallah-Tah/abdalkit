@@ -31,13 +31,13 @@ AbdalKit requires PHP 8+ and Laravel 9+.
 
 1. Create a new Laravel project.
 
-2. Require Larastarters as a dev dependency, run:
+2. Require AbdalKit as a dev dependency, run:
 
     ```shell
     composer require abdallah-tah/abdalkit:dev-main --dev
     ```
 
-3. Configure Larastarters, run the command below:
+3. Configure AbdalKit, run the command below:
 
     ```shell
     php artisan abdalkit:install

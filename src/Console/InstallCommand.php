@@ -77,6 +77,8 @@ class InstallCommand extends Command
             copy(__DIR__ . '/../../resources/stubs/routes.php', base_path('routes/web.php'));
 
             copy(__DIR__ . '/../../resources/stubs/controllers/UserController.php', app_path('Http/Controllers/UserController.php'));
+            copy(__DIR__ . '/../../resources/stubs/controllers/Auth/AuthenticatedSessionController.php', app_path('Http/Controllers/Auth/AuthenticatedSessionController.php'));
+            copy(__DIR__ . '/../../resources/stubs/controllers/Auth/SetPasswordController.php', app_path('Http/Controllers/Auth/SetPasswordController.php'));
 
             // (new Filesystem)->ensureDirectoryExists(app_path('Http/Requests'));
             // (new Filesystem)->copyDirectory(__DIR__ . '/../../resources/stubs/requests', app_path('Http/Requests/'));
@@ -85,11 +87,8 @@ class InstallCommand extends Command
             (new Filesystem)->ensureDirectoryExists(app_path('Http/Requests/Auth'));
             (new Filesystem)->ensureDirectoryExists(app_path('Http/Requests'));
 
-            // Copy the LoginRequest.php file to the Auth directory and copy the AuthenticatedSessionController and SetPasswordController.php files to the Auth directory
+            // Copy the LoginRequest.php file to the Auth directory
             copy(__DIR__ . '/../../resources/stubs/requests/Auth/LoginRequest.php', app_path('Http/Requests/Auth/LoginRequest.php'));
-            copy(__DIR__ . '/../../resources/stubs/requests/Auth/AuthenticatedSessionController.php', app_path('Http/Controllers/Auth/AuthenticatedSessionController.php'));
-            copy(__DIR__ . '/../../resources/stubs/requests/Auth/SetPasswordController.php', app_path('Http/Controllers/Auth/SetPasswordController.php'));
-            // Copy the ProfileUpdateRequest.php file to the Profile directory
             copy(__DIR__ . '/../../resources/stubs/requests/ProfileUpdateRequest.php', app_path('Http/Requests/ProfileUpdateRequest.php'));
 
             if ($theme === 'tailwindcomponents') {
