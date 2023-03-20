@@ -61,7 +61,7 @@ class InstallCommand extends Command
         );
 
         $this->setupDatabases();
-
+        $this->updateUserModelConnection();
 
         if ($kit === "Laravel Breeze (Tailwind)") {
             $theme = $this->choice(
@@ -240,12 +240,15 @@ class InstallCommand extends Command
                 $port = $this->ask('Please enter the port for the database');
                 $database = $this->ask('Please enter the database name for the database');
                 $username = $this->ask('Please enter the username for the database');
-                $password = $this->ask('Please enter the password for the database'); 
+                $password = $this->ask('Please enter the password for the database');
 
                 $this->updateDatabaseConfig($i, $driver, $host, $port, $database, $username, $password);
                 $this->updateEnvFile($i, $driver, $host, $port, $database, $username, $password);
             }
         }
+
+        //success message with the list of databases
+        $this->info('Databases have been setup successfully');
     }
 
 
@@ -292,5 +295,24 @@ EOD;
         $envContent .= "\nDB_PASSWORD_{$index}={$password}\n";
 
         file_put_contents($envFilePath, $envContent);
+    }
+
+    public function updateUserModelConnection()
+    {
+        $availableConnections = array_keys(config('database.connections'));
+        $selectedConnection = $this->choice('Please select the database connection for the User model:', $availableConnections);
+
+        $userModelPath = app_path('Models/User.php');
+        $userModelContent = file_get_contents($userModelPath);
+
+        if (strpos($userModelContent, 'protected $connection =') !== false) {
+            $userModelContent = preg_replace('/protected \$connection = [\'"].*?[\'"];/', "protected \$connection = '{$selectedConnection}';", $userModelContent);
+        } else {
+            $connectionLine = "    protected \$connection = '{$selectedConnection}';\n";
+            $userModelContent = preg_replace('/(class User extends Authenticatable\n{)/', "$1\n{$connectionLine}", $userModelContent);
+        }
+
+        file_put_contents($userModelPath, $userModelContent);
+        $this->info("User model connection has been set to '{$selectedConnection}'.");
     }
 }
