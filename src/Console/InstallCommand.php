@@ -87,8 +87,8 @@ class InstallCommand extends Command
 
             // Copy the LoginRequest.php file to the Auth directory and copy the AuthenticatedSessionController and SetPasswordController.php files to the Auth directory
             copy(__DIR__ . '/../../resources/stubs/requests/Auth/LoginRequest.php', app_path('Http/Requests/Auth/LoginRequest.php'));
-            copy(__DIR__ . '/../../resources/stubs/requests/Auth/AuthenticatedSessionController.php', app_path('Http/Requests/Auth/AuthenticatedSessionController.php'));
-            copy(__DIR__ . '/../../resources/stubs/requests/Auth/SetPasswordController.php', app_path('Http/Requests/Auth/SetPasswordController.php'));
+            copy(__DIR__ . '/../../resources/stubs/requests/Auth/AuthenticatedSessionController.php', app_path('Http/Controllers/Auth/AuthenticatedSessionController.php'));
+            copy(__DIR__ . '/../../resources/stubs/requests/Auth/SetPasswordController.php', app_path('Http/Controllers/Auth/SetPasswordController.php'));
             // Copy the ProfileUpdateRequest.php file to the Profile directory
             copy(__DIR__ . '/../../resources/stubs/requests/ProfileUpdateRequest.php', app_path('Http/Requests/ProfileUpdateRequest.php'));
 
