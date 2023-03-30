@@ -8,8 +8,6 @@ The package supports:
 
 - [Laravel Breeze](https://github.com/laravel/breeze) (Tailwind)
 
-<br/>
-
 ` ❗ ` **IMPORTANT:**  This package must be used in a **NEW** Laravel project. Existing project functionalities, such as routes or controllers, may be overridden by Larastarters.
 
 ---
@@ -22,6 +20,8 @@ Along with the Design Themes, AbdalKit adds a few features that are typical for 
 - A sample table of Users list
 - A sample static text page
 - Two-level menu on the sidebar
+- Roles and Permissions management
+- Livewire integration
 
 <br/>
 
