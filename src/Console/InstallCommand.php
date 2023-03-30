@@ -156,10 +156,10 @@ class InstallCommand extends Command
         (new Filesystem)->ensureDirectoryExists(resource_path('views/users'));
         copy(__DIR__ . '/../../resources/stubs/breeze/tailwindcomponents/views/users/index.blade.php', resource_path('views/users/index.blade.php'));
 
-        //run command composer require livewire/livewire
-        $this->requireComposerPackages('livewire/livewire');
-        //run command php artisan livewire:install
-        $this->runCommands(['php artisan livewire:install']);
+        // //run command composer require livewire/livewire
+        // $this->requireComposerPackages('livewire/livewire');
+        // //run command php artisan livewire:install
+        // $this->runCommands(['php artisan livewire:install']);
 
         $this->runCommands(['npm install', 'npm run build']);
 
