@@ -80,6 +80,13 @@ class InstallCommand extends Command
             copy(__DIR__ . '/../../resources/stubs/controllers/Auth/AuthenticatedSessionController.php', app_path('Http/Controllers/Auth/AuthenticatedSessionController.php'));
             copy(__DIR__ . '/../../resources/stubs/controllers/Auth/SetPasswordController.php', app_path('Http/Controllers/Auth/SetPasswordController.php'));
 
+            // Ensure the Models directory exists and copy the model files
+            (new Filesystem)->ensureDirectoryExists(app_path('Models'));
+            copy(__DIR__ . '/../../resources/stubs/models/Permission.php', app_path('Models/Permission.php'));
+            copy(__DIR__ . '/../../resources/stubs/models/Role.php', app_path('Models/Role.php'));
+            copy(__DIR__ . '/../../resources/stubs/models/RolePermission.php', app_path('Models/RolePermission.php'));
+            copy(__DIR__ . '/../../resources/stubs/models/UserRole.php', app_path('Models/UserRole.php'));
+
             // (new Filesystem)->ensureDirectoryExists(app_path('Http/Requests'));
             // (new Filesystem)->copyDirectory(__DIR__ . '/../../resources/stubs/requests', app_path('Http/Requests/'));
 
@@ -90,6 +97,17 @@ class InstallCommand extends Command
             // Copy the LoginRequest.php file to the Auth directory
             copy(__DIR__ . '/../../resources/stubs/requests/Auth/LoginRequest.php', app_path('Http/Requests/Auth/LoginRequest.php'));
             copy(__DIR__ . '/../../resources/stubs/requests/ProfileUpdateRequest.php', app_path('Http/Requests/ProfileUpdateRequest.php'));
+
+            // Ensure the migrations directory exists and copy the migration files
+            (new Filesystem)->ensureDirectoryExists(database_path('migrations'));
+            //2023_03_27_172234_create_roles_table.php, 2023_03_27_172249_create_user_roles_table.php, 2023_03_27_172344_create_permissions_table.php, 2023_03_27_172344_create_role_permissions_table.php
+            copy(__DIR__ . '/../../resources/stubs/migrations/2023_03_27_172234_create_roles_table.php', database_path('migrations/2023_03_27_172234_create_roles_table.php'));
+            copy(__DIR__ . '/../../resources/stubs/migrations/2023_03_27_172249_create_user_roles_table.php', database_path('migrations/2023_03_27_172249_create_user_roles_table.php'));
+            copy(__DIR__ . '/../../resources/stubs/migrations/2023_03_27_172344_create_permissions_table.php', database_path('migrations/2023_03_27_172344_create_permissions_table.php'));
+            copy(__DIR__ . '/../../resources/stubs/migrations/2023_03_27_172344_create_role_permissions_table.php', database_path('migrations/2023_03_27_172344_create_role_permissions_table.php'));
+
+            //run migrations
+            shell_exec("{$this->php_version} artisan migrate");
 
             if ($theme === 'tailwindcomponents') {
                 return $this->replaceWithTailwindComponents();
@@ -138,7 +156,25 @@ class InstallCommand extends Command
         (new Filesystem)->ensureDirectoryExists(resource_path('views/users'));
         copy(__DIR__ . '/../../resources/stubs/breeze/tailwindcomponents/views/users/index.blade.php', resource_path('views/users/index.blade.php'));
 
+        try {
+            $this->info('Installing Livewire...');
+            $this->requireComposerPackages('livewire/livewire');
+            $this->info('Livewire installed successfully.');
+        } catch (\Exception $e) {
+            $this->error('Failed to install Livewire: ' . $e->getMessage());
+        }
+
+        //run command php artisan livewire:install
+        try {
+            $this->info('Running Livewire installation command...');
+            $this->runCommands(['php artisan livewire:install']);
+            $this->info('Livewire installation command executed successfully.');
+        } catch (\Exception $e) {
+            $this->error('Failed to run Livewire installation command: ' . $e->getMessage());
+        }
+
         $this->runCommands(['npm install', 'npm run build']);
+
         $this->components->info('Breeze scaffolding replaced successfully.');
     }
 
