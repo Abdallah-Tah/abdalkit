@@ -138,26 +138,27 @@ class InstallCommand extends Command
         (new Filesystem)->ensureDirectoryExists(public_path('images'));
         (new Filesystem)->ensureDirectoryExists(public_path('js'));
 
-        (new Filesystem)->copyDirectory(__DIR__ . '/../../resources/stubs/no-auth/tailwindcomponents/views/auth', resource_path('views/auth'));
-        (new Filesystem)->copyDirectory(__DIR__ . '/../../resources/stubs/no-auth/tailwindcomponents/views/layouts', resource_path('views/layouts'));
-        (new Filesystem)->copyDirectory(__DIR__ . '/../../resources/stubs/no-auth/tailwindcomponents/views/components', resource_path('views/components'));
+        // (new Filesystem)->copyDirectory(__DIR__ . '/../../resources/stubs/no-auth/tailwindcomponents/views/auth', resource_path('views/auth'));
+        (new Filesystem)->copyDirectory(__DIR__ . '/../../resources/stubs/no-auth/views/layouts', resource_path('views/layouts'));
+        (new Filesystem)->copyDirectory(__DIR__ . '/../../resources/stubs/no-auth/views/components', resource_path('views/components'));
 
         (new Filesystem)->delete(resource_path('views/components/responsive-nav-link.blade.php'));
 
-        copy(__DIR__ . '/../../resources/stubs/no-auth/tailwindcomponents/views/dashboard.blade.php', resource_path('views/dashboard.blade.php'));
+        copy(__DIR__ . '/../../resources/stubs/no-auth/views/dashboard.blade.php', resource_path('views/dashboard.blade.php'));
+
 
         // Assets
-        copy(__DIR__ . '/../../resources/stubs/no-auth/tailwindcomponents/tailwind.config.js', base_path('tailwind.config.js'));
-        copy(__DIR__ . '/../../resources/stubs/no-auth/tailwindcomponents/css/app.css', resource_path('css/app.css'));
-        copy(__DIR__ . '/../../resources/stubs/no-auth/tailwindcomponents/js/init-alpine.js', public_path('js/init-alpine.js'));
+        copy(__DIR__ . '/../../resources/stubs/no-auth/tailwind.config.js', base_path('tailwind.config.js'));
+        copy(__DIR__ . '/../../resources/stubs/no-auth/css/app.css', resource_path('css/app.css'));
+        copy(__DIR__ . '/../../resources/stubs/no-auth/js/init-alpine.js', public_path('js/init-alpine.js'));
 
         // Images
-        (new Filesystem)->copyDirectory(__DIR__ . '/../../resources/stubs/no-auth/tailwindcomponents/images', public_path('images'));
+        (new Filesystem)->copyDirectory(__DIR__ . '/../../resources/stubs/no-auth/images', public_path('images'));
 
 
         // Demo table
-        (new Filesystem)->ensureDirectoryExists(resource_path('views/users'));
-        copy(__DIR__ . '/../../resources/stubs/no-auth/tailwindcomponents/views/users/index.blade.php', resource_path('views/users/index.blade.php'));
+        // (new Filesystem)->ensureDirectoryExists(resource_path('views/users'));
+        // copy(__DIR__ . '/../../resources/stubs/no-auth/views/users/index.blade.php', resource_path('views/users/index.blade.php'));
 
         // Run command composer require livewire/livewire
         $this->call('require', ['packages' => 'livewire/livewire']);
