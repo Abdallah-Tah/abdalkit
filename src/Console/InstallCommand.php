@@ -72,13 +72,13 @@ class InstallCommand extends Command
                 ['tailwindcomponents'],
                 0
             );
-
+    
             // Install breeze
             $this->requireComposerPackages('laravel/breeze --dev');
-            shell_exec("{$this->php_version} artisan breeze:install blade");
-
+            shell_exec("{$this->php_version} artisan breeze:install blade");    
+          
             $this->setupDatabases();
-            $this->updateUserModelConnection();
+            $this->updateUserModelConnection();   
 
             copy(__DIR__ . '/../../resources/stubs/routes.php', base_path('routes/web.php'));
 
