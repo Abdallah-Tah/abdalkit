@@ -5,6 +5,6 @@
     </x-slot>
 
     <div class="py-12">
-        {{__('Welcome to the dashboard!')}}
+        {{__('Welcome to the dashboard Laravel Breeze with no auth scaffolding!')}}
     </div>
 </x-app-layout>
