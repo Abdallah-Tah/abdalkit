@@ -64,6 +64,8 @@ class InstallCommand extends Command
 
             //C:\laragon\www\abdalkit\resources\stubs\no-auth
             $this->replaceWithTailwindComponentsForNoAuth();
+
+            return;
         } elseif ($kit === "Laravel Breeze (Tailwind)") {
             $theme = $this->choice(
                 'Insert 0 to install the theme below',
