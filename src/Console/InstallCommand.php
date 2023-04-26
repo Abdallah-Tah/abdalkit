@@ -161,9 +161,10 @@ class InstallCommand extends Command
         // copy(__DIR__ . '/../../resources/stubs/no-auth/views/users/index.blade.php', resource_path('views/users/index.blade.php'));
 
         // Run command composer require livewire/livewire
-        $this->call('require', ['packages' => 'livewire/livewire']);
+        $this->requireComposerPackages('livewire/livewire');
+
         // Run command php artisan livewire:install
-        $this->call('livewire:install');
+        $this->runCommands(['php artisan livewire:install']);
 
         $this->runCommands(['npm install', 'npm run build']);
 
