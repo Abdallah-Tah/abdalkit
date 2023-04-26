@@ -56,12 +56,19 @@ class InstallCommand extends Command
 
         $kit = $this->choice(
             'Which starter kit you want to use?',
-            ['Laravel Breeze (Tailwind)'],
+            ['Laravel Breeze (Tailwind)', 'Laravel No-Auth (Tailwind)'],
             0
         );
 
+
+
         $this->setupDatabases();
         $this->updateUserModelConnection();
+
+        if ($kit === "Laravel No-Auth (Tailwind)") {
+            $noAuth = $this->option('no-auth');
+            $stubsPath = $noAuth ? '/../../resources/stubs/no-auth' : '/../../resources/stubs';
+        }
 
         if ($kit === "Laravel Breeze (Tailwind)") {
             $theme = $this->choice(
@@ -71,7 +78,7 @@ class InstallCommand extends Command
             );
 
             // Install breeze
-            $this->requireComposerPackages('laravel/breeze:^1.4');
+            $this->requireComposerPackages('laravel/breeze --dev');
             shell_exec("{$this->php_version} artisan breeze:install blade");
 
             copy(__DIR__ . '/../../resources/stubs/routes.php', base_path('routes/web.php'));
@@ -156,14 +163,15 @@ class InstallCommand extends Command
         (new Filesystem)->ensureDirectoryExists(resource_path('views/users'));
         copy(__DIR__ . '/../../resources/stubs/breeze/tailwindcomponents/views/users/index.blade.php', resource_path('views/users/index.blade.php'));
 
-        // //run command composer require livewire/livewire
-        // $this->requireComposerPackages('livewire/livewire');
-        // //run command php artisan livewire:install
-        // $this->runCommands(['php artisan livewire:install']);
+        // Run command composer require livewire/livewire
+        $this->call('require', ['packages' => 'livewire/livewire']);
+        // Run command php artisan livewire:install
+        $this->call('livewire:install');
 
         $this->runCommands(['npm install', 'npm run build']);
 
         $this->components->info('Breeze scaffolding replaced successfully.');
+
     }
 
 
