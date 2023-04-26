@@ -60,17 +60,11 @@ class InstallCommand extends Command
             0
         );
 
-
-
-        $this->setupDatabases();
-        $this->updateUserModelConnection();
-
         if ($kit === "Laravel No-Auth (Tailwind)") {
-            $noAuth = $this->option('no-auth');
-            $stubsPath = $noAuth ? '/../../resources/stubs/no-auth' : '/../../resources/stubs';
-        }
 
-        if ($kit === "Laravel Breeze (Tailwind)") {
+            //C:\laragon\www\abdalkit\resources\stubs\no-auth
+            $this->replaceWithTailwindComponentsForNoAuth();
+        } elseif ($kit === "Laravel Breeze (Tailwind)") {
             $theme = $this->choice(
                 'Insert 0 to install the theme below',
                 ['tailwindcomponents'],
@@ -80,6 +74,9 @@ class InstallCommand extends Command
             // Install breeze
             $this->requireComposerPackages('laravel/breeze --dev');
             shell_exec("{$this->php_version} artisan breeze:install blade");
+
+            $this->setupDatabases();
+            $this->updateUserModelConnection();
 
             copy(__DIR__ . '/../../resources/stubs/routes.php', base_path('routes/web.php'));
 
@@ -121,6 +118,55 @@ class InstallCommand extends Command
             }
         }
     }
+
+    //replaceWithTailwindComponentsForNoAuth
+    public function replaceWithTailwindComponentsForNoAuth()
+    {
+        // NPM Packages...
+        $this->updateNodePackages(function ($packages) {
+            return [
+                'color' => '^4.0.1'
+            ] + $packages;
+        });
+
+        // Views...
+        (new Filesystem)->ensureDirectoryExists(resource_path('views/auth'));
+        (new Filesystem)->ensureDirectoryExists(resource_path('views/layouts'));
+        (new Filesystem)->ensureDirectoryExists(resource_path('views/components'));
+        (new Filesystem)->ensureDirectoryExists(public_path('images'));
+        (new Filesystem)->ensureDirectoryExists(public_path('js'));
+
+        (new Filesystem)->copyDirectory(__DIR__ . '/../../resources/stubs/no-auth/tailwindcomponents/views/auth', resource_path('views/auth'));
+        (new Filesystem)->copyDirectory(__DIR__ . '/../../resources/stubs/no-auth/tailwindcomponents/views/layouts', resource_path('views/layouts'));
+        (new Filesystem)->copyDirectory(__DIR__ . '/../../resources/stubs/no-auth/tailwindcomponents/views/components', resource_path('views/components'));
+
+        (new Filesystem)->delete(resource_path('views/components/responsive-nav-link.blade.php'));
+
+        copy(__DIR__ . '/../../resources/stubs/no-auth/tailwindcomponents/views/dashboard.blade.php', resource_path('views/dashboard.blade.php'));
+
+        // Assets
+        copy(__DIR__ . '/../../resources/stubs/no-auth/tailwindcomponents/tailwind.config.js', base_path('tailwind.config.js'));
+        copy(__DIR__ . '/../../resources/stubs/no-auth/tailwindcomponents/css/app.css', resource_path('css/app.css'));
+        copy(__DIR__ . '/../../resources/stubs/no-auth/tailwindcomponents/js/init-alpine.js', public_path('js/init-alpine.js'));
+
+        // Images
+        (new Filesystem)->copyDirectory(__DIR__ . '/../../resources/stubs/no-auth/tailwindcomponents/images', public_path('images'));
+
+
+        // Demo table
+        (new Filesystem)->ensureDirectoryExists(resource_path('views/users'));
+        copy(__DIR__ . '/../../resources/stubs/no-auth/tailwindcomponents/views/users/index.blade.php', resource_path('views/users/index.blade.php'));
+
+        // Run command composer require livewire/livewire
+        $this->call('require', ['packages' => 'livewire/livewire']);
+        // Run command php artisan livewire:install
+        $this->call('livewire:install');
+
+        $this->runCommands(['npm install', 'npm run build']);
+
+        $this->components->info('Breeze scaffolding replaced successfully.');
+    }
+
 
     protected function replaceWithTailwindComponents()
     {
@@ -171,7 +217,6 @@ class InstallCommand extends Command
         $this->runCommands(['npm install', 'npm run build']);
 
         $this->components->info('Breeze scaffolding replaced successfully.');
-
     }
 
 
