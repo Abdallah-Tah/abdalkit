@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\ProfileUpdateRequest;
 
+/**
+ * @group Profile management
+ * By: https://github.com/Abdallah-Tah
+ * Date: 2023-04-26
+ */
 class ProfileController extends Controller
 {
     public function show()

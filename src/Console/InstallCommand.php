@@ -146,6 +146,11 @@ class InstallCommand extends Command
 
         copy(__DIR__ . '/../../resources/stubs/no-auth/views/dashboard.blade.php', resource_path('views/dashboard.blade.php'));
 
+        //remove auth folder
+        (new Filesystem)->deleteDirectory(resource_path('views/auth'));
+
+        //replace web.php routes
+        copy(__DIR__ . '/../../resources/stubs/routes-no-auth.php', base_path('routes/web.php'));
 
         // Assets
         copy(__DIR__ . '/../../resources/stubs/no-auth/tailwind.config.js', base_path('tailwind.config.js'));
@@ -162,9 +167,6 @@ class InstallCommand extends Command
 
         // Run command composer require livewire/livewire
         $this->requireComposerPackages('livewire/livewire');
-
-        // Run command php artisan livewire:install
-        $this->runCommands(['php artisan livewire:install']);
 
         $this->runCommands(['npm install', 'npm run build']);
 
@@ -214,9 +216,7 @@ class InstallCommand extends Command
         copy(__DIR__ . '/../../resources/stubs/breeze/tailwindcomponents/views/users/index.blade.php', resource_path('views/users/index.blade.php'));
 
         // Run command composer require livewire/livewire
-        $this->call('require', ['packages' => 'livewire/livewire']);
-        // Run command php artisan livewire:install
-        $this->call('livewire:install');
+        $this->requireComposerPackages('livewire/livewire');
 
         $this->runCommands(['npm install', 'npm run build']);
 
