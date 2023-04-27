@@ -147,7 +147,7 @@ class InstallCommand extends Command
         copy(__DIR__ . '/../../resources/stubs/no-auth/views/dashboard.blade.php', resource_path('views/dashboard.blade.php'));
 
         //remove auth folder
-        (new Filesystem)->deleteDirectory(resource_path('views/auth'));
+        // (new Filesystem)->deleteDirectory(resource_path('views/auth'));
 
         //replace web.php routes
         copy(__DIR__ . '/../../resources/stubs/routes-no-auth.php', base_path('routes/web.php'));
